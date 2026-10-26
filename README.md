@@ -22,7 +22,7 @@ ASS Version Control simplifies this process by comparing two subtitle files and 
 
 ## Screenshot
 
-![ASS Version Control application interface](Assets/screenshot.png)
+<img width="894" height="697" alt="Screenshot" src="https://github.com/user-attachments/assets/a045888d-b942-4179-9cf9-2accca8e6cb4" />
 
 ## Getting Started
 
