@@ -14,12 +14,12 @@ public static class SubsParser
 
         foreach (var line in lines)
         {
-            if (line.StartsWith("[Events]"))
+            if (line.Trim().Equals("[Events]", System.StringComparison.OrdinalIgnoreCase))
             {
                 isSubsSection = true;
                 continue;
             }
-            if (isSubsSection && line.StartsWith("Dialogue:"))
+            if (isSubsSection && line.StartsWith("Dialogue:", System.StringComparison.OrdinalIgnoreCase))
             {
                 var entry = ParseDialogueLine(line);
                 if (entry != null)
@@ -38,14 +38,14 @@ public static class SubsParser
             string startTime = parts[1].Trim();
             string endTime = parts[2].Trim();
 
-            string? textWithComment = parts.Length >= 10 ? parts[9].Trim() : null;
+            string textWithComment = parts[9].Trim();
 
             string? comment = null;
             string? text = null;
 
-            if (textWithComment != null)
+            if (textWithComment.Length > 0)
             {
-                if (textWithComment[textWithComment.Length - 1] == '}')
+                if (textWithComment.Contains('}'))
                 {
                     var commentBuilder = new StringBuilder();
                     var matches = Regex.Matches(textWithComment, @"\{.*?\}");

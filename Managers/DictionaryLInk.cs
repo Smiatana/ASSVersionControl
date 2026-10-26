@@ -4,7 +4,7 @@ public enum Dictionaries
 {
     Vivy,
     Skarnik,
-    Vebrum
+    Verbum
 }
 
 public static class DictionaryLink
@@ -13,7 +13,7 @@ public static class DictionaryLink
     {
         [Dictionaries.Vivy] = "https://dictionaries.vivy.app/?q={word}",
         [Dictionaries.Skarnik] = "https://www.skarnik.by/search?term={word}&lang=beld",
-        [Dictionaries.Vebrum] = "https://verbum.by/?q={word}"
+        [Dictionaries.Verbum] = "https://verbum.by/?q={word}"
     };
     public static string GetSearchLink(Dictionaries dict, string word)
         => $" ({_links[dict].Replace("{word}", word)})";

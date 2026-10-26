@@ -6,28 +6,39 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AegisubVersionControl.MainWindow"
         Title="ASS Version Control"
-        Width="610"
-        Height="610"
+        Width="900"
+        Height="680"
+        MinWidth="640"
+        MinHeight="500"
         Icon="avares://AegisubVersionControl/Assets/icon.ico">
-    
-    <Grid RowDefinitions="Auto,*,Auto" Margin="10">
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="10" Grid.Row="0">
-            <Button x:Name="LoadTranslatedButton" Click="LoadTranslatedButton_Click">Загрузіць пераклад</Button>
-            <Button x:Name="LoadEditedButton" Click="LoadEditedButton_Click">Загрузіць адрэдагаваны пераклад</Button>
-            <Button x:Name="FindChangesButton" Click="FindChangesButton_Click">Знайсці змены</Button>
-            <Button x:Name="SettingsButton" Click="SettingsButton_Click">☀</Button>
-        </StackPanel>
-        
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Margin="10">
-            <local:DictionaryTextBox
-                x:Name="ChangesDisplay"
-                Text="Тут будуць адлюстроўвацца змены"
-                Background="White"
-                VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch"
-                MinHeight="400" />
-        </ScrollViewer>
 
-        <Button Grid.Row="2" HorizontalAlignment="Center" x:Name="CopyButton" Click="CopyButton_Click">Скапіяваць у буфер абмену</Button>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,18">
+            <StackPanel Spacing="4">
+                <TextBlock Text="ASS Version Control" FontSize="26" FontWeight="Bold" />
+                <TextBlock Text="Параўнайце два варыянты перакладу субтытраў" Opacity="0.7" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="SettingsButton" Click="SettingsButton_Click" Content="Налады" VerticalAlignment="Center" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*,Auto" Margin="0,0,0,18">
+            <Button x:Name="LoadTranslatedButton" Click="LoadTranslatedButton_Click" MinHeight="54" Margin="0,0,5,0" HorizontalContentAlignment="Left">
+                <StackPanel><TextBlock Text="Версія перакладу" FontWeight="SemiBold"/><TextBlock x:Name="TranslatedFileLabel" Text="Выберыце або перацягніце .ass файл" Opacity="0.7" TextTrimming="CharacterEllipsis"/></StackPanel>
+            </Button>
+            <Button Grid.Column="1" x:Name="LoadEditedButton" Click="LoadEditedButton_Click" MinHeight="54" Margin="5,0" HorizontalContentAlignment="Left">
+                <StackPanel><TextBlock Text="Адрэдагаваная версія" FontWeight="SemiBold"/><TextBlock x:Name="EditedFileLabel" Text="Выберыце або перацягніце .ass файл" Opacity="0.7" TextTrimming="CharacterEllipsis"/></StackPanel>
+            </Button>
+            <Button Grid.Column="2" x:Name="FindChangesButton" Click="FindChangesButton_Click" Content="Знайсці змены" MinHeight="54" Margin="5,0,0,0" VerticalContentAlignment="Center" IsDefault="True" />
+        </Grid>
+
+        <Border x:Name="DropSurface" Grid.Row="2" Padding="14" CornerRadius="10" BorderThickness="1" BorderBrush="Gray" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock x:Name="DropStatusText" Text="Перацягніце сюды адзін або два файлы .ass / .ssa" Opacity="0.65" Margin="0,0,0,8" />
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <local:DictionaryTextBox x:Name="ChangesDisplay" Text="Вынікі параўнання з'явяцца тут" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                </ScrollViewer>
+            </Grid>
+        </Border>
+        <Button Grid.Row="3" HorizontalAlignment="Right" x:Name="CopyButton" Click="CopyButton_Click" Content="Скапіяваць вынік" />
     </Grid>
 </Window>

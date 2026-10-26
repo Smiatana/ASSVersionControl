@@ -22,14 +22,14 @@ public partial class DictionaryTextBox : UserControl
     }
     public string Text
     {
-        get => InnerTextBox.Text;
+        get => InnerTextBox.Text ?? string.Empty;
         set => InnerTextBox.Text = value;
     }
 
     public string SelectedText => InnerTextBox.SelectedText;
     public int SelectionStart => InnerTextBox.SelectionStart;
 
-    private void InsertDictionaryLink_Click(object sender, RoutedEventArgs e)
+    private void InsertDictionaryLink_Click(object? sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(SelectedText))
         {
@@ -65,7 +65,7 @@ public partial class DictionaryTextBox : UserControl
         int lineEnd = Text.IndexOf('\n', charIndex);
         return lineEnd == -1 ? Text.Length : lineEnd;
     }
-    
+
     private ScrollViewer? FindParentScrollViewer(Control control)
     {
         var parent = control.Parent;

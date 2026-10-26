@@ -2,9 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using System;
-using System.Diagnostics;
-using System.IO;
-using Newtonsoft.Json;
 
 namespace AegisubVersionControl.Views.Settings;
 
@@ -12,7 +9,6 @@ public partial class SettingsWindow : Window
 {
     private AppSettings _appSettings = new AppSettings();
     public AppSettings SavedSettings => _appSettings;
-    private string _filePath;
 
     public SettingsWindow()
     {
@@ -28,38 +24,10 @@ public partial class SettingsWindow : Window
         LoadDefaultsButton = this.FindControl<Button>("LoadDefaultsButton");
         DictionariesComboBox = this.FindControl<ComboBox>("DictionariesComboBox");
 
-        DictionariesComboBox.ItemsSource = Enum.GetValues(typeof(Dictionaries));
+        if (DictionariesComboBox != null)
+            DictionariesComboBox.ItemsSource = Enum.GetValues(typeof(Dictionaries));
 
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        _filePath = Path.Combine(appData, "AegisubVersionControl", "AppSettings.json");
-
-        var settingsDir = Path.GetDirectoryName(_filePath);
-        if (!string.IsNullOrEmpty(settingsDir))
-        {
-            Directory.CreateDirectory(settingsDir);
-        }
-
-        PutDefaults();
-
-        if (File.Exists(_filePath))
-        {
-            LoadSettings();
-        }
-    }
-
-    private void PutDefaults()
-    {
-        _appSettings = new AppSettings
-        {
-            ShowAdded = false,
-            ShowDeleted = false,
-            ShowComments = true,
-            ShowIndexes = false,
-            ShowTimeCodes = true,
-            UnderlineChanges = true,
-            DictionaryLink = Dictionaries.Vivy
-        };
-
+        _appSettings = SettingsStore.Load();
         PutSettings();
     }
 
@@ -94,19 +62,6 @@ public partial class SettingsWindow : Window
         }
     }
 
-    private void LoadSettings()
-    {
-        try
-        {
-            string jsonString = File.ReadAllText(_filePath);
-            _appSettings = JsonConvert.DeserializeObject<AppSettings>(jsonString) ?? new AppSettings();
-            PutSettings();
-        }
-        catch (Exception ex)
-        {
-            PutDefaults();
-        }
-    }
 
     private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
     {
@@ -123,9 +78,8 @@ public partial class SettingsWindow : Window
                 DictionaryLink = (Dictionaries)(DictionariesComboBox?.SelectedItem ?? Dictionaries.Vivy)
             };
 
-            string jsonString = JsonConvert.SerializeObject(_appSettings, Formatting.Indented);
-            File.WriteAllText(_filePath, jsonString);
-            Close();
+            SettingsStore.Save(_appSettings);
+            Close(true);
         }
         catch (Exception ex)
         {
@@ -133,5 +87,9 @@ public partial class SettingsWindow : Window
         }
     }
 
-    private void LoadDefaultsButton_Click(object sender, RoutedEventArgs e) => PutDefaults();
+    private void LoadDefaultsButton_Click(object sender, RoutedEventArgs e)
+    {
+        _appSettings = new AppSettings();
+        PutSettings();
+    }
 }

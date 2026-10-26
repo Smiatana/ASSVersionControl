@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Avalonia.Controls.Embedding.Offscreen;
 
 public static class ChangesFinder
 {
@@ -14,21 +13,10 @@ public static class ChangesFinder
     }
     private static TimeSpan ParseTime(string timecode)
     {
-        try
-        {
-            timecode = timecode.Trim()
-                            .Replace('.', ':')
-                            .Replace(',', ':');
-            var parts = timecode.Split(':');
-            if (parts.Length == 2) timecode = $"0:{timecode}";
-            if (parts.Length > 3) timecode = string.Join(":", parts.Take(3));
-
-            return TimeSpan.Parse(timecode);
-        }
-        catch
-        {
-            return TimeSpan.Zero;
-        }
+        timecode = timecode.Trim().Replace(',', '.');
+        return TimeSpan.TryParse(timecode, CultureInfo.InvariantCulture, out var parsed)
+            ? parsed
+            : TimeSpan.Zero;
     }
     private static bool IsEarlier(SubtitleEntry a, SubtitleEntry b)
     {
@@ -43,18 +31,6 @@ public static class ChangesFinder
         var matches = Regex.Matches(input, @"\w+|[^\w\s]|\s");
         return matches.Select(m => m.Value).ToArray();
     }
-    static void PrintMatrix(int[,] matrix, int len1, int len2)
-    {
-        for (int i = 0; i < len1; i++)
-        {
-            for (int j = 0; j < len2; j++)
-            {
-                System.Console.Write(matrix[i,j]);
-            }
-            System.Console.WriteLine("\n");
-        }
-    }
-
     private static (List<string>, List<string>) DiffAlign(string[] transWords, string[] edWords)
     {
         int transLen = transWords.Length;
@@ -76,7 +52,6 @@ public static class ChangesFinder
                 }
             }
         }
-        PrintMatrix(lcsTable, transLen + 1, edLen + 1);
         var alignedTrans = new List<string>();
         var alignedEd = new List<string>();
 
@@ -138,10 +113,10 @@ public static class ChangesFinder
                             List<string> underlinedTrans;
                             List<string> underlinedEd;
                             (underlinedTrans, underlinedEd) = DiffAlign(transWords, edWords);
-                            
 
-                            transLine.Content = string.Join("", underlinedTrans);
-                            edLine.Content = string.Join("", underlinedEd);
+
+                            transLine = CopyWithContent(transLine, string.Join("", underlinedTrans));
+                            edLine = CopyWithContent(edLine, string.Join("", underlinedEd));
 
                         }
                         changes.Add(
@@ -205,4 +180,12 @@ public static class ChangesFinder
         }
         return changes;
     }
+
+    private static SubtitleEntry CopyWithContent(SubtitleEntry entry, string content) => new()
+    {
+        StartTime = entry.StartTime,
+        EndTime = entry.EndTime,
+        Comment = entry.Comment,
+        Content = content
+    };
 }

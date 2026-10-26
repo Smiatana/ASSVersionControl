@@ -27,13 +27,39 @@ public static class FileLoader
 
             if (files.Count == 0) return null;
 
-            await using var stream = await files[0].OpenReadAsync();
-            using var streamReader = new StreamReader(stream);
-            return new(await streamReader.ReadToEndAsync());
+            return await ReadAssFileAsync(files[0]);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading file: {ex.Message}");
+            return null;
+        }
+    }
+
+    public static async Task<string?> ReadAssFileAsync(IStorageFile file)
+    {
+        try
+        {
+            await using var stream = await file.OpenReadAsync();
+            using var streamReader = new StreamReader(stream);
+            return await streamReader.ReadToEndAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error reading {file.Name}: {ex.Message}");
+            return null;
+        }
+    }
+
+    public static async Task<string?> ReadAssFileAsync(string path)
+    {
+        try
+        {
+            return await File.ReadAllTextAsync(path);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error reading {path}: {ex.Message}");
             return null;
         }
     }
